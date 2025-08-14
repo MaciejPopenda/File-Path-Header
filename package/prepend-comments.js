@@ -269,8 +269,25 @@ function prependComment(filePath, relativePath) {
   if (!prefix) return;
 
   const commentLine = `${prefix} ${relativePath}`;
-  if (content.trim().startsWith(commentLine)) return;
-  fs.writeFileSync(filePath, commentLine + "\n" + content, "utf8");
+  const lines = content.split("\n");
+
+  if (lines.length > 0) {
+    const firstLine = lines[0].trim();
+
+    // If already correct, skip
+    if (firstLine === commentLine) return;
+
+    // If the first line contains the filename (case insensitive)
+    const fileName = path.basename(filePath);
+    if (firstLine.toLowerCase().includes(fileName.toLowerCase())) {
+      // Remove old first line
+      lines.shift();
+    }
+  }
+
+  // Prepend correct comment line
+  const newContent = [commentLine, ...lines].join("\n");
+  fs.writeFileSync(filePath, newContent, "utf8");
   console.log(`Updated: ${relativePath}`);
 }
 
