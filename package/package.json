@@ -1,6 +1,6 @@
 {
   "name": "file-path-header",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Prepends a comment with the file's relative path at the top of supported source files.",
   "main": "file-path-header.js",
   "bin": {
