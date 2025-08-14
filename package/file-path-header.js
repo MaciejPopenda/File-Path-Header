@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 
 // -----------------------
-// Gitignore Handling Logic (extracted from ascii-tree-generator.js)
+// Gitignore Handling Logic
 // -----------------------
 const DEFAULT_IGNORE_PATTERNS = [
   "node_modules",
