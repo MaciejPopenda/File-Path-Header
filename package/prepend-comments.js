@@ -1,6 +1,5 @@
 // package\prepend-comments.js
 
-
 import fs from "fs";
 import path from "path";
 
@@ -21,9 +20,7 @@ const DEFAULT_IGNORE_PATTERNS = [
   "*.cache"
 ];
 
-const ALWAYS_IGNORE = [
-  ".git"
-];
+const ALWAYS_IGNORE = [".git"];
 
 class GitignoreHandler {
   constructor(options = {}) {
@@ -72,14 +69,16 @@ class GitignoreHandler {
     const patterns = [...ALWAYS_IGNORE, ...DEFAULT_IGNORE_PATTERNS];
     patterns.push(...this.options.exceptDirs, ...this.options.exceptFiles);
 
-    return [{
-      absolutePath: this.projectRoot,
-      relativePath: "",
-      patterns: patterns.map(p => ({
-        pattern: p,
-        isNegation: false
-      }))
-    }];
+    return [
+      {
+        absolutePath: this.projectRoot,
+        relativePath: "",
+        patterns: patterns.map((p) => ({
+          pattern: p,
+          isNegation: false
+        }))
+      }
+    ];
   }
 
   findGitignoresRecursive(currentDir, relativePath, result) {
@@ -94,11 +93,13 @@ class GitignoreHandler {
             const patterns = this.parseGitignoreContent(content);
 
             if (relativePath === "") {
-              patterns.unshift(...ALWAYS_IGNORE.map(p => ({ pattern: p, isNegation: false })));
-              patterns.push(...[...this.options.exceptDirs, ...this.options.exceptFiles].map(p => ({
-                pattern: p,
-                isNegation: false
-              })));
+              patterns.unshift(...ALWAYS_IGNORE.map((p) => ({ pattern: p, isNegation: false })));
+              patterns.push(
+                ...[...this.options.exceptDirs, ...this.options.exceptFiles].map((p) => ({
+                  pattern: p,
+                  isNegation: false
+                }))
+              );
             }
 
             result.push({
@@ -126,25 +127,31 @@ class GitignoreHandler {
   }
 
   parseGitignoreContent(content) {
-    return content.split("\n").map(line => {
-      line = line.trim();
-      if (!line || line.startsWith("#")) return null;
-      const isNegation = line.startsWith("!");
-      if (isNegation) line = line.slice(1);
-      if (line.endsWith("/")) line = line.slice(0, -1);
-      if (line.startsWith("/")) line = line.slice(1);
-      return { pattern: line, isNegation };
-    }).filter(Boolean);
+    return content
+      .split("\n")
+      .map((line) => {
+        line = line.trim();
+        if (!line || line.startsWith("#")) return null;
+        const isNegation = line.startsWith("!");
+        if (isNegation) line = line.slice(1);
+        if (line.endsWith("/")) line = line.slice(0, -1);
+        if (line.startsWith("/")) line = line.slice(1);
+        return { pattern: line, isNegation };
+      })
+      .filter(Boolean);
   }
 
   isDirectoryIgnoredBySoFar(itemName, relativePath, gitignoreFiles) {
     const itemDirectory = path.dirname(relativePath);
-    const applicable = gitignoreFiles.filter(gi => this.isPathInDirectory(itemDirectory, gi.relativePath));
+    const applicable = gitignoreFiles.filter((gi) =>
+      this.isPathInDirectory(itemDirectory, gi.relativePath)
+    );
     applicable.sort((a, b) => a.relativePath.length - b.relativePath.length);
 
     let ignored = false;
     for (const gi of applicable) {
-      let relFromGi = gi.relativePath === "" ? relativePath : path.relative(gi.relativePath, relativePath);
+      let relFromGi =
+        gi.relativePath === "" ? relativePath : path.relative(gi.relativePath, relativePath);
       relFromGi = relFromGi.split(path.sep).join("/");
       for (const pat of gi.patterns) {
         if (this.matchesPattern(pat.pattern, itemName, relFromGi)) {
@@ -160,14 +167,22 @@ class GitignoreHandler {
     const normalizedRel = relativePath.split(path.sep).join("/");
 
     if (pattern.includes("*") || pattern.includes("?")) {
-      const regex = new RegExp("^" + normalizedPattern.replace(/\./g, "\\.").replace(/\*/g, ".*").replace(/\?/g, ".") + "$");
+      const regex = new RegExp(
+        "^" +
+          normalizedPattern.replace(/\./g, "\\.").replace(/\*/g, ".*").replace(/\?/g, ".") +
+          "$"
+      );
       if (regex.test(itemName) || regex.test(normalizedRel)) return true;
-      return normalizedRel.split("/").some((_, i, arr) => regex.test(arr.slice(0, i + 1).join("/")));
+      return normalizedRel.split("/").some((_, i, arr) =>
+        regex.test(arr.slice(0, i + 1).join("/"))
+      );
     }
 
     if (itemName === normalizedPattern || normalizedRel === normalizedPattern) return true;
     if (normalizedPattern.includes("/")) {
-      return normalizedRel.startsWith(normalizedPattern + "/") || normalizedRel === normalizedPattern;
+      return (
+        normalizedRel.startsWith(normalizedPattern + "/") || normalizedRel === normalizedPattern
+      );
     } else {
       return normalizedRel.split("/").includes(normalizedPattern);
     }
@@ -182,12 +197,15 @@ class GitignoreHandler {
 
   shouldIgnore(itemName, relativePath) {
     const itemDirectory = path.dirname(relativePath);
-    const applicable = this.gitignoreFiles.filter(gi => this.isPathInDirectory(itemDirectory, gi.relativePath));
+    const applicable = this.gitignoreFiles.filter((gi) =>
+      this.isPathInDirectory(itemDirectory, gi.relativePath)
+    );
     applicable.sort((a, b) => a.relativePath.length - b.relativePath.length);
 
     let ignored = false;
     for (const gi of applicable) {
-      let relFromGi = gi.relativePath === "" ? relativePath : path.relative(gi.relativePath, relativePath);
+      let relFromGi =
+        gi.relativePath === "" ? relativePath : path.relative(gi.relativePath, relativePath);
       relFromGi = relFromGi.split(path.sep).join("/");
       for (const pat of gi.patterns) {
         if (this.matchesPattern(pat.pattern, itemName, relFromGi)) {
@@ -201,11 +219,23 @@ class GitignoreHandler {
   shouldIncludeByPatterns(itemName, relativePath, isDir) {
     const normalizedRel = relativePath.split(path.sep).join("/");
     if (isDir) {
-      if (this.excludeRegex && (this.excludeRegex.test(itemName) || this.excludeRegex.test(normalizedRel))) return false;
+      if (
+        this.excludeRegex &&
+        (this.excludeRegex.test(itemName) || this.excludeRegex.test(normalizedRel))
+      )
+        return false;
       return true;
     }
-    if (this.excludeRegex && (this.excludeRegex.test(itemName) || this.excludeRegex.test(normalizedRel))) return false;
-    if (this.includeRegex && !(this.includeRegex.test(itemName) || this.includeRegex.test(normalizedRel))) return false;
+    if (
+      this.excludeRegex &&
+      (this.excludeRegex.test(itemName) || this.excludeRegex.test(normalizedRel))
+    )
+      return false;
+    if (
+      this.includeRegex &&
+      !(this.includeRegex.test(itemName) || this.includeRegex.test(normalizedRel))
+    )
+      return false;
     return true;
   }
 
@@ -218,13 +248,27 @@ class GitignoreHandler {
 // -----------------------
 // Comment Prepending Logic
 // -----------------------
-const COMMENTABLE_EXTENSIONS = [
-  ".js", ".ts", ".jsx", ".tsx", ".java", ".c", ".cpp", ".cs", ".go", ".rs", ".php", ".swift", ".kt", ".m", ".scala"
-];
+const COMMENT_STYLES = {
+  "//": [".js", ".ts", ".jsx", ".tsx", ".java", ".c", ".cpp", ".cs", ".go", ".rs", ".php", ".swift", ".kt", ".m", ".scala"],
+  "#": [".py", ".sh", ".rb", ".pl"]
+};
+
+function getCommentPrefix(extension) {
+  for (const [prefix, extensions] of Object.entries(COMMENT_STYLES)) {
+    if (extensions.includes(extension)) {
+      return prefix;
+    }
+  }
+  return null;
+}
 
 function prependComment(filePath, relativePath) {
   const content = fs.readFileSync(filePath, "utf8");
-  const commentLine = `// ${relativePath}`;
+  const ext = path.extname(filePath).toLowerCase();
+  const prefix = getCommentPrefix(ext);
+  if (!prefix) return;
+
+  const commentLine = `${prefix} ${relativePath}`;
   if (content.trim().startsWith(commentLine)) return;
   fs.writeFileSync(filePath, commentLine + "\n" + content, "utf8");
   console.log(`Updated: ${relativePath}`);
@@ -242,7 +286,7 @@ function processDirectory(dirPath, gitHandler, projectRoot) {
       processDirectory(fullPath, gitHandler, projectRoot);
     } else {
       const ext = path.extname(item).toLowerCase();
-      if (COMMENTABLE_EXTENSIONS.includes(ext)) {
+      if (getCommentPrefix(ext)) {
         prependComment(fullPath, relativePath);
       }
     }
