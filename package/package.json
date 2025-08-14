@@ -1,25 +1,23 @@
 {
-  "name": "prepend-comments",
+  "name": "file-path-header",
   "version": "1.0.0",
-  "description": "Add path comments at the top of the files.",
-  "main": "prepend-comments.js",
+  "description": "Prepends a comment with the file's relative path at the top of supported source files.",
+  "main": "file-path-header.js",
   "bin": {
-    "prepend-comments": "./prepend-comments.js"
-  },
-  "directories": {
-    "test": "test"
+    "file-path-header": "./file-path-header.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MaciejPopenda/prepend-comments.git"
+    "url": "git+https://github.com/MaciejPopenda/file-path-header.git"
   },
   "author": "Maciej Popenda",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/MaciejPopenda/prepend-comments/issues"
+    "url": "https://github.com/MaciejPopenda/file-path-header/issues"
   },
-  "homepage": "https://github.com/MaciejPopenda/prepend-comments#readme",
+  "homepage": "https://github.com/MaciejPopenda/file-path-header#readme",
   "engines": {
     "node": ">=12.0.0"
-  }
+  },
+  "type": "module"
 }

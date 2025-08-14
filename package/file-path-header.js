@@ -1,3 +1,4 @@
+// package\file-path-header.js
 // package\prepend-comments.js
 
 import fs from "fs";
